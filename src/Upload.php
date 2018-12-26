@@ -1,5 +1,5 @@
 <?php
-namespace RainSunshineCloud\File;
+namespace RainSunshineCloud;
 
 class File
 {
