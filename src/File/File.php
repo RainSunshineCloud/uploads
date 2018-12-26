@@ -1,4 +1,5 @@
 <?php
+namespace RainSunshineCloud\File;
 
 class File
 {
