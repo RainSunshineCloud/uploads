@@ -1,5 +1,8 @@
 <?php
-include './Upload.php';
+require_once '../../../vendor/autoload.php';
+use RainSunshineCloud\Captcha;
+use RainSunshineCloud\CaptchaException;
+
 try{
     //文件上传
     echo Upload::upload('file_input_name')->getFileName();
