@@ -9,29 +9,28 @@
 ```
 try{
     //文件上传
-    File::upload('file_input_name')->getFilePath(true);
+    Upload::upload('file_input_name')->getFilePath(true);
     //图片上传
-    File::uploadImg('img_input_name')->getFilePath(true);
+    Upload::uploadImg('img_input_name')->getFilePath(true);
     //base6464图片上传(使用post)
-    File::uploadImg('img_input_name',true)->getFileName(true);
+    Upload::uploadImg('img_input_name',true)->getFileName(true);
     //base64图片上传(使用get)
-    File::uploadImg('img_input_name',true,'get')->getFileName(true);
+    Upload::uploadImg('img_input_name',true,'get')->getFileName(true);
     //base64图片上传(使用json)
-    File::uploadImg('img_input_name',true.'json')->getFileName(true);
+    Upload::uploadImg('img_input_name',true.'json')->getFileName(true);
 
     //设置属性
 
     //设置基础路径
-    File::setBasePath('/usr/local/public/');
+    Upload::setBasePath('/usr/local/public/');
     //其他临时设置
-    $file = new File();
+    $file = new Upload();
     $file->setDir('文件夹')->setPrefixName('前缀')->setValidType(['jpg'])->setMaxSize(100000)->upload('file_input_name')->getFilePath(true);
 
-} catch (FileException $e) {
+} catch (UploadException $e) {
     echo $e->getMessage();
 }
 
 
 
 ```
-
