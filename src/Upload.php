@@ -1,7 +1,7 @@
 <?php
 namespace RainSunshineCloud;
 
-class File
+class Upload
 {
     protected $types = [
         1 => 'gif',
@@ -42,7 +42,7 @@ class File
 
         $file_info = getimagesizefromstring($data);
         if (!$file_info || empty($file_info[2]) || empty($this->types[$file_info[2]])) {
-            throw new FileException('获取文件格式失败',8);
+            throw new UploadException('获取文件格式失败',8);
         }
 
         return $this->types[$file_info[2]];
@@ -56,17 +56,17 @@ class File
     protected function getExtByPath(string $file_path)
     {
         if (strpos($file_path,'/') !== false || strpos($file_path,'./') !== false) {
-            throw new FileException('只能加载本地文件',9);
+            throw new UploadException('只能加载本地文件',9);
         }
 
         if (!is_file($file_path)) {//文件路径
-            throw new FileException('未找到该文件',8);
+            throw new UploadException('未找到该文件',8);
         }
 
         $file_info = getimagesize($file_path);
 
         if (!$file_info || empty($file_info[2]) || empty($this->types[$file_info[2]])) {
-            throw new FileException('获取文件格式失败',8);
+            throw new UploadException('获取文件格式失败',8);
         }
 
         return $this->types[$file_info[2]];
@@ -82,7 +82,7 @@ class File
         $ext = trim(strrchr($file_name,'.'),'.');
 
         if (!$ext) {
-            throw new FileException('获取文件格式失败',8);
+            throw new UploadException('获取文件格式失败',8);
         }
         return $ext;
     }
@@ -95,7 +95,7 @@ class File
     protected function isValidType(string $ext)
     {
         if (!in_array($ext,$this->types)) {
-            throw new FileException('不合法的文件类型',11);
+            throw new UploadException('不合法的文件类型',11);
         }
         return $this;
     }
@@ -108,7 +108,7 @@ class File
     protected function isValidSize(int $size)
     {
         if ($size > self::$max_size) {
-            throw new FileException('文件大小必须小于'.self::$max_size /1000 .'KB',12);
+            throw new UploadException('文件大小必须小于'.self::$max_size /1000 .'KB',12);
         }
         return $this;
     }
@@ -122,24 +122,24 @@ class File
     {
 
         if (empty($_FILES[$input_name])) {
-            throw new FileException('未找到该文件',8);
+            throw new UploadException('未找到该文件',8);
         }
 
         switch ($_FILES[$input_name]['error']) {
             case 0:
                 break;
             case 1:
-                throw new FileException('文件大小必须小于'.($this->max_size /1000).'KB',1);
+                throw new UploadException('文件大小必须小于'.($this->max_size /1000).'KB',1);
             case 2:
-                throw new FileException('文件大小必须小于'.($this->max_size /1000).'KB',2);
+                throw new UploadException('文件大小必须小于'.($this->max_size /1000).'KB',2);
             case 3:
-                throw new FileException('文件损坏，只有部分上传成功',3);
+                throw new UploadException('文件损坏，只有部分上传成功',3);
             case 4:
-                throw new FileException('文件上传失败',4);
+                throw new UploadException('文件上传失败',4);
             case 6:
-                throw new FileException('找不到临时文件夹',6);
+                throw new UploadException('找不到临时文件夹',6);
             case 7:
-                throw new FileException('文件上传失败',7);
+                throw new UploadException('文件上传失败',7);
         }
 
         return $_FILES[$input_name];
@@ -158,19 +158,19 @@ class File
         $base64 = explode('base64,', $file_data);
 
         if (!$base64 || count($base64) < 2) {
-            throw new FileException('文件格式错误',12);
+            throw new UploadException('文件格式错误',12);
         }
 
         $data = base64_decode(trim($base64[1]));
 
         if (!$data) {
-            throw new FileException('文件格式错误',12);
+            throw new UploadException('文件格式错误',12);
         }
 
         $size = strlen($data);
 
         if ($size < 8) {
-            throw new FileException('文件格式错误',12);
+            throw new UploadException('文件格式错误',12);
         }
 
         return ['size' => $size,'data' => $data];
@@ -187,25 +187,25 @@ class File
         switch (strtoupper($method)) {
             case 'POST':
                 if (empty($_POST[$input_name])) {
-                    throw new FileException('未找到该文件',8);
+                    throw new UploadException('未找到该文件',8);
                 } 
                 return  $_POST[$input_name];
             case 'GET':
                 if (empty($_GET[$input_name])) {
-                    throw new FileException('未找到该文件',8);
+                    throw new UploadException('未找到该文件',8);
                 }
                 return $_GET[$input_name];
             case 'JSON':
                 $data = file_get_contents('php://input');
 
                 if (empty($data)) {
-                    throw new FileException('未找到该文件',8);
+                    throw new UploadException('未找到该文件',8);
                 } 
 
                 $data = json_decode($data,true);
 
                 if (empty($data) || empty($data[$input_name])) {
-                     throw new FileException('未找到该文件',8);
+                     throw new UploadException('未找到该文件',8);
                 }
 
                 return $data[$input_name];
@@ -224,7 +224,7 @@ class File
         preg_match('/(^[0-9\.]+)(\w+)/',$post_max_size,$info);
 
         if (count($info) < 3) {
-            throw new FileException('获取ini设置失败',13);
+            throw new UploadException('获取ini设置失败',13);
         }
 
         $size = strtoupper($info[2]);
@@ -232,7 +232,7 @@ class File
         $arr = array("K" => 10, "M" => 20);
 
         if (!isset($arr[$size])) {
-            throw new FileException('获取ini设置失败',13);
+            throw new UploadException('获取ini设置失败',13);
         } 
 
         return $info[1] << $arr[$info[2]];
@@ -249,7 +249,7 @@ class File
         $this->file_name = $this->createFileName() . '.' . $ext;
         $path = self::$base_root_path.$this->dir.$this->file_name;
         if (!move_uploaded_file($file_path,$path)) {
-            throw new FileException('文件上传失败',14);
+            throw new UploadException('文件上传失败',14);
         }
     }
 
@@ -265,7 +265,7 @@ class File
         $path = self::$base_root_path.$this->dir.$this->file_name;
 
         if (!file_put_contents($path,$data)) {
-            throw new FileException('文件上传失败',14);
+            throw new UploadException('文件上传失败',14);
         }
     }
     
@@ -287,7 +287,7 @@ class File
 
         if (!file_exists($path)) {
             if(! mkdir($path,$this->mode,true)) {
-                throw new FileException('创建文件夹失败',15);
+                throw new UploadException('创建文件夹失败',15);
             }
         }
     }
@@ -326,7 +326,7 @@ class File
         }
            
         if (empty($this->types)) {
-            throw new FileException('设置合法的文件类型失败',16);
+            throw new UploadException('设置合法的文件类型失败',16);
         }
 
         return $this;
@@ -348,7 +348,7 @@ class File
             }
 
             if ($size > $post_max_size ) {
-                 throw new FileException('文件最大传送值设置失败',17);
+                 throw new UploadException('文件最大传送值设置失败',17);
                 return false;
             }
 
@@ -360,7 +360,7 @@ class File
             }
 
             if ($size > $upload_max_filesize) {
-                throw new FileException('文件最大传送值设置失败',18);
+                throw new UploadException('文件最大传送值设置失败',18);
                 return false;
             }
 
@@ -482,4 +482,4 @@ class File
     }
 }
 
-class FileException extends Exception{}
+class UploadException extends Exception{}
